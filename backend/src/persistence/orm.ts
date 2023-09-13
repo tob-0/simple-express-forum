@@ -24,4 +24,10 @@ export class Orm {
   public get user(): Prisma.UserDelegate {
     return this.db.user;
   }
+  public get post(): Prisma.PostDelegate {
+    return this.db.post;
+  }
+  public get board(): Prisma.BoardDelegate {
+    return this.db.board;
+  }
 }

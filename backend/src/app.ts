@@ -7,6 +7,7 @@ export class App {
   private port: Number;
   private constructor() {
     this.server = express();
+    this.server.use(express.json());
     this.port = globalConfig.port;
   }
 

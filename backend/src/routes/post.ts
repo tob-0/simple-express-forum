@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { UserService } from '../services/user';
 import { Validator } from '../validation/validator';
 import {
   UserCreationSchema,
@@ -7,45 +6,52 @@ import {
 } from '../validation/schema/user';
 import { CreationError } from '../validation/errors/creation';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PostService } from '../services/post';
+import {
+  PostCreationSchema,
+  PostUpdateSchema,
+} from '../validation/schema/post';
 
-export const userRouter = Router();
-const userService = UserService.getInstance();
+export const postRouter = Router();
+const postService = PostService.getInstance();
 
-userRouter.get('/', async (req, res) => {
-  const users = await userService.findAll({
+postRouter.get('/', async (req, res) => {
+  const posts = await postService.findAll({
     select: {
       id: true,
-      name: true,
-      email: true,
+      content: true,
+      title: true,
+      authorId: true,
     },
   });
-  res.json(users);
+  res.json(posts);
 });
 
-userRouter.post('/', async (req, res) => {
+postRouter.post('/', async (req, res) => {
   const reqBodyValidation = Validator.validate(req.body).against(
-    UserCreationSchema,
+    PostCreationSchema,
   );
-
   if (!reqBodyValidation.success) {
-    return res.status(400).json(new CreationError(reqBodyValidation.error));
+    return res
+      .status(400)
+      .json({ error: true, details: reqBodyValidation.error });
   }
 
-  const { name, email, password } = reqBodyValidation.data;
-  const newUser = await userService.create(name, email, password);
-  res.status(201).json({ name, email });
+  const { content, title, authorId, boardId } = reqBodyValidation.data;
+  const newPost = await postService.create(content, title, authorId, boardId);
+  res.status(201).json({ id: newPost.id, content, title, authorId, boardId });
 });
 
-userRouter.get('/:id', async (req, res) => {
+postRouter.get('/:id', async (req, res) => {
   const idValidation = Validator.validate(req.params.id).numeric();
   if (!idValidation.success) {
     return res.status(400).json(idValidation);
   }
-  const userId = idValidation.data;
+  const postId = idValidation.data;
   try {
-    const user = await userService.findOneById(userId);
-    const { name, email } = user;
-    return res.status(200).json({ name, email });
+    const post = await postService.findOneById(postId);
+    const { content, title, authorId, boardId, id } = post;
+    return res.status(200).json({ content, title, authorId, boardId, id });
   } catch (e) {
     if (e instanceof PrismaClientKnownRequestError) {
       return res.sendStatus(404);
@@ -54,15 +60,15 @@ userRouter.get('/:id', async (req, res) => {
   }
 });
 
-userRouter.delete('/:id', async (req, res) => {
+postRouter.delete('/:id', async (req, res) => {
   const idValidation = Validator.validate(req.params.id).numeric();
   if (!idValidation.success) {
     return res.status(400).json(idValidation);
   }
-  const userId = idValidation.data;
+  const postId = idValidation.data;
 
   try {
-    const deletion = await userService.delete(userId);
+    const deletion = await postService.delete(postId);
     const { id } = deletion;
     return res.status(200).json({ id });
   } catch (e) {
@@ -73,14 +79,14 @@ userRouter.delete('/:id', async (req, res) => {
   }
 });
 
-userRouter.patch('/:id', async (req, res) => {
+postRouter.patch('/:id', async (req, res) => {
   const idValidation = Validator.validate(req.params.id).numeric();
   if (!idValidation.success) {
     return res.status(400).json(idValidation);
   }
-  const userId = idValidation.data;
+  const postId = idValidation.data;
   const reqBodyValidation = Validator.validate(req.body).against(
-    UserUpdateSchema,
+    PostUpdateSchema,
   );
 
   if (!reqBodyValidation.success) {
@@ -88,7 +94,7 @@ userRouter.patch('/:id', async (req, res) => {
   }
 
   try {
-    const update = await userService.update(userId, reqBodyValidation.data);
+    const update = await postService.update(postId, reqBodyValidation.data);
     const { id } = update;
     return res.status(200).json({ id });
   } catch (e) {
