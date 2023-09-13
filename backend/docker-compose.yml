@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  dev-rncp:
+    container_name: dev-rncp
+    image: ${POSTGRES_IMAGE:-postgres:latest}
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_DEV_PORT:-5449}:5432
+    restart: always
