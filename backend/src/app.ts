@@ -1,5 +1,5 @@
 import express, { Express, Router } from 'express';
-import { globalConfig } from './config/global';
+import Config from './config/config';
 
 export class App {
   private static instance: App;
@@ -8,7 +8,8 @@ export class App {
   private constructor() {
     this.server = express();
     this.server.use(express.json());
-    this.port = globalConfig.port;
+    this.server.disable('x-powered-by');
+    this.port = Config.common.port;
   }
 
   public static getInstance(): App {

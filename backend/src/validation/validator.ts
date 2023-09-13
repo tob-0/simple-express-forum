@@ -1,4 +1,4 @@
-import { ZodSchema } from 'zod';
+import { ZodSchema, z } from 'zod';
 
 type GenericValidateResult<T> =
   | { success: true; data: T }
@@ -18,4 +18,13 @@ export const Validator = {
       return { success: true, data: parsed };
     },
   }),
+};
+
+export const Guard = {
+  withSchema: <T extends ZodSchema>(
+    obj: unknown,
+    schema: T,
+  ): obj is z.infer<T> => {
+    return Validator.validate(obj).against(schema).success;
+  },
 };

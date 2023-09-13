@@ -1,16 +1,12 @@
-import { Router } from 'express';
-import { Validator } from '../validation/validator';
-import {
-  UserCreationSchema,
-  UserUpdateSchema,
-} from '../validation/schema/user';
-import { CreationError } from '../validation/errors/creation';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { Router } from 'express';
 import { PostService } from '../services/post';
+import { CreationError } from '../validation/errors/creation';
 import {
   PostCreationSchema,
   PostUpdateSchema,
 } from '../validation/schema/post';
+import { Validator } from '../validation/validator';
 
 export const postRouter = Router();
 const postService = PostService.getInstance();

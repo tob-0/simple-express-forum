@@ -1,33 +1,25 @@
-import { Router } from 'express';
-import { Validator } from '../validation/validator';
-import {
-  UserCreationSchema,
-  UserUpdateSchema,
-} from '../validation/schema/user';
-import { CreationError } from '../validation/errors/creation';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import {
-  PostCreationSchema,
-  PostUpdateSchema,
-} from '../validation/schema/post';
+import { Router } from 'express';
 import { BoardService } from '../services/board';
+import { CreationError } from '../validation/errors/creation';
 import {
   BoardCreationSchema,
   BoardUpdateSchema,
 } from '../validation/schema/board';
+import { Validator } from '../validation/validator';
 
 export const boardRouter = Router();
 const boardService = BoardService.getInstance();
 
 boardRouter.get('/', async (req, res) => {
-  const posts = await boardService.findAll({
+  const boards = await boardService.findAll({
     select: {
       id: true,
       title: true,
       description: true,
     },
   });
-  res.json(posts);
+  res.json(boards);
 });
 
 boardRouter.post('/', async (req, res) => {
@@ -87,7 +79,7 @@ boardRouter.patch('/:id', async (req, res) => {
   if (!idValidation.success) {
     return res.status(400).json(idValidation);
   }
-  const postId = idValidation.data;
+  const boardId = idValidation.data;
   const reqBodyValidation = Validator.validate(req.body).against(
     BoardUpdateSchema,
   );
@@ -97,7 +89,7 @@ boardRouter.patch('/:id', async (req, res) => {
   }
 
   try {
-    const update = await boardService.update(postId, reqBodyValidation.data);
+    const update = await boardService.update(boardId, reqBodyValidation.data);
     const { id } = update;
     return res.status(200).json({ id });
   } catch (e) {
