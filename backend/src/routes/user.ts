@@ -7,6 +7,7 @@ import {
 } from '../validation/schema/user';
 import { CreationError } from '../validation/errors/creation';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { verifyToken } from '../middleware/auth';
 
 export const userRouter = Router();
 const userService = UserService.getInstance();
@@ -97,4 +98,10 @@ userRouter.patch('/:id', async (req, res) => {
     }
     return res.sendStatus(500);
   }
+});
+
+userRouter.get('/profile', verifyToken, async (req, res) => {
+  if (req.user === undefined) return res.sendStatus(401);
+  const { name, email } = req.user;
+  return res.json({ me: { name, email } });
 });

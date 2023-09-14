@@ -19,12 +19,14 @@ export const verifyToken = (
 ) => {
   const authHeader = req.headers.authorization;
   if (authHeader === undefined) return res.sendStatus(401);
-
   const token = authHeader.replace('Bearer ', '');
   if (token.length === 0) return res.sendStatus(401);
 
-  jwt.verify(token, config.auth.jwtSecret, (err: any, user: any) => {
-    if (!Guard.withSchema(user, UserDto)) return res.sendStatus(400);
+  jwt.verify(token, config.auth.jwtSecret, (err: any, jwtData: any) => {
+    const user = { name: jwtData.name, email: jwtData.email, id: jwtData.id };
+    if (!Guard.withSchema(user, UserDto)) {
+      return res.sendStatus(400);
+    }
     if (err) return res.sendStatus(403);
     req.user = user;
     next();
