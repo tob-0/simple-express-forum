@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import { UserService } from '../services/user';
-import { Validator } from '../validation/validator';
+import { UserService } from '../../services/user';
+import { Validator } from '../../validation/validator';
 import {
   UserCreationSchema,
   UserUpdateSchema,
-} from '../validation/schema/user';
-import { CreationError } from '../validation/errors/creation';
+} from '../../validation/schema/user';
+import { CreationError } from '../../validation/errors/creation';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { verifyToken } from '../middleware/auth';
+import { verifyToken } from '../../middleware/auth';
 
 export const userRouter = Router();
 const userService = UserService.getInstance();

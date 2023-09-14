@@ -21,6 +21,12 @@ export class UserService {
   public findOneById(id: number) {
     return this.orm.findUniqueOrThrow({ where: { id } });
   }
+  public fetchPosts(id: number) {
+    return this.orm.findFirstOrThrow({
+      where: { id },
+      select: { Posts: true },
+    });
+  }
   public findOneByEmail(email: string) {
     return this.orm.findUnique({ where: { email } });
   }
