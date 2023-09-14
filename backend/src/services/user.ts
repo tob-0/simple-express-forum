@@ -21,6 +21,9 @@ export class UserService {
   public findOneById(id: number) {
     return this.orm.findUniqueOrThrow({ where: { id } });
   }
+  public findOneByEmail(email: string) {
+    return this.orm.findUnique({ where: { email } });
+  }
   public delete(id: number) {
     return this.orm.delete({ where: { id } });
   }

@@ -1,9 +1,9 @@
 import { User } from '@prisma/client';
+import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import config from '../config/config';
-import { NextFunction, Request, Response } from 'express';
-import { Guard, Validator } from '../validation/validator';
 import { UserDto } from '../dto/user.dto';
+import { Guard } from '../validation/validator';
 
 export const generateAccessToken = (user: User) =>
   jwt.sign(
